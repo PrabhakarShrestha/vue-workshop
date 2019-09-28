@@ -5,7 +5,7 @@
         <h4 class="title">Netflix Ratings</h4>
       </div>
       <div class="search">
-        <input type="text" class="form-control" placeholder="Search by title" />
+        <input v-model="title" type="text" class="form-control" placeholder="Search by title" />
       </div>
       <div class="content">
         <div>
@@ -16,9 +16,12 @@
             <p></p>
           </div>
           <ul class="list">
-            <li>
-              <a href></a>
-              <span>By:</span>
+            <li v-for="item in news" :key= "item.objectID">
+              <template v-if ="item.title">
+                 <a target='_blank' v-bind:href= item.url> {{item.url}}</a>
+                <span>By:</span>
+                {{item.title}}
+              </template>
             </li>
           </ul>
         </div>
@@ -28,8 +31,36 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  name: "HackerNews"
+  name: "HackerNews",
+  data(){
+    return {
+      title : "",
+      news: [],
+      storeNews: []
+    }
+  },
+  async created(){
+    try {
+      const response = await axios.get("http://hn.algolia.com/api/v1/search");
+      this.storeNews = response.data.hits;
+      this.news = this.storeNews;
+    } catch(error){
+
+    }
+  },
+  watch: {
+   title(value) {
+     this.news = this.storeNews.filter((storenew) => {
+       if (storenew.title && storenew.title.toLowerCase().includes(value.toLowerCase())) {
+         return storenew
+       }
+     })
+     console.log(this.news);
+   }
+  }
 };
 </script>
 
