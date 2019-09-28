@@ -5,23 +5,25 @@
         <div>
           <h4 class="title">Netflix Ratings</h4>
           <div class="actions">
-            <button class="btn">Lowest rated</button>
-            <button class="btn">Highest rated</button>
+            <button @click= "ascending" class="btn">Lowest rated</button>
+            <button @click= "descending" class="btn">Highest rated</button>
           </div>
         </div>
         <div class="search">
-          <input type="text" class="form-control" placeholder="Search by title" />
+          <input v-model="search" @keyup.enter="filterModules" type="text" class="form-control" placeholder="Search by title" />
         </div>
       </div>
       <div class="content">
         <table class="table">
           <thead>
-            <th></th>
+            <th v-for="(column,index) in columns" :key="index">
+              {{column}}
+            </th>
           </thead>
           <tbody>
-            <tr>
-              <td></td>
-              <td></td>
+            <tr v-for="(movie,index) in filterModules" :key="index">
+              <td>{{movie.title}}</td>
+              <td>{{movie.rating}}</td>
             </tr>
           </tbody>
         </table>
@@ -35,7 +37,8 @@ export default {
   name: "NetflixRatings",
   data: function() {
     return {
-      columns: ["title", "rating"],
+      columns: ["Title", "Rating"],
+      search: "",
       ratingsInfo: [
         { title: `Grey's Anatomy`, rating: 98 },
         { title: `Prison Break`, rating: 98 },
@@ -59,6 +62,23 @@ export default {
         { title: `Marvel's Iron Fist`, rating: 98 }
       ]
     };
+  },
+  methods: {
+    ascending(){
+      this.ratingsInfo.sort((a, b) => (a.rating > b.rating ? 1 : -1));
+    },
+    descending(){
+      this.ratingsInfo.sort((a, b) => (a.rating < b.rating ? 1 : -1));
+    }
+  },
+  computed: {
+    filterModules(){
+      // alert('clicked');  
+      return this.ratingsInfo.filter(info => {
+        console.log(info.title);  
+        return info.title.toLowerCase().match(this.search.toLowerCase());
+      })
+    }
   }
 };
 </script>
